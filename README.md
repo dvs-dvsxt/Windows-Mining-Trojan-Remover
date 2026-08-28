@@ -15,9 +15,9 @@
 | 🗂️ **File Scan** | Scans key folders (`ProgramData`, `Public`, `Program Files`, `Temp`) for malicious files |
 | 🔑 **Registry Scan** | Detects suspicious startup entries & restores Windows Defender exclusions |
 | ⏰ **Scheduled Task Scan** | Detects malicious scheduled tasks (including English-word deception) |
-| ⚙️ **Process Scan** | Identifies and kills malicious processes |
+| ⚙️ **Process Scan** | Identifies and kills malicious processes (`Get-Process`, no deprecated `wmic`) |
 | 🌐 **Network Scan** | Flags connections to known mining pools / C2 servers |
-| 🔤 **Random-Name Checker** | Detects virus-like random filenames (e.g. `UT7ejTkn`, `5ghAHv`) |
+| 🔤 **Random-Name Checker** | Detects virus-like random filenames |
 | ♻️ **Post-Restart Compare** | Compares logs after reboot to detect old/new viruses |
 | 🧹 **Auto-Cleanup** | Removes autostart when system is confirmed clean |
 | 💾 **Scan Logs** | Saves detailed scan & cleanup records to `C:\SysMonitorLogs` |
@@ -26,6 +26,24 @@
 ### Boot Verification (BootVerify)
 - 🔎 Verifies **MBR**, **EFI**, and **WMI** persistence for trojan infection
 - Uses Python libraries, system tools, and `BOOTICE.exe`
+
+---
+
+## ✅ v1.0.1 Fixes
+
+This release fixes several issues found in v1.0.0:
+
+| Fix | Description |
+|-----|-------------|
+| 🟢 **AweSun False Positive** | Removed AweSun (Sunlogin remote control) from malicious keywords; added to whitelist |
+| 🔧 **Process Scan Overhaul** | Replaced deprecated `wmic` with PowerShell `Get-Process` (removed on Win 10/11) |
+| 🗑️ **Effective Deletion/Kill** | Fixed `_found_malicious_files` / `_found_malicious_processes` not being passed — now uses global variables |
+| 📁 **Path Fix** | `WORK_DIR` now uses script directory (`os.path.dirname(os.path.abspath(__file__))`) instead of hardcoded path |
+| 📝 **Expanded Whitelist** | Added AweSun, Thunder, PalmInput, Wujie, CrystalDisk, and system processes to avoid false positives |
+| 🚫 **Path Whitelist** | Skips scanning legitimate dirs (AweSun, CrystalDisk, Thunder, PalmInput, Wujie) |
+| 🔇 **Silent Errors** | Added `2>nul` to reg/schtasks commands to suppress "path not found" errors |
+| 🔍 **Registry Scan Fix** | Only outputs suspicious registry items (no more repeated spam) |
+| 🎲 **Random-Name Tuning** | Only checks `.exe/.dll/.dat/.tmp/.sys/.bin`; whitelisted names not flagged |
 
 ---
 
@@ -55,6 +73,14 @@ BootVerify.exe
 python code/WMTR.py
 python code/sys_monitor.py
 python code/BootVerify.py
+```
+
+### Rebuild the EXE
+
+```powershell
+# Rebuild WMTR_MAIN.exe from source
+cd code
+pyinstaller --onefile --name WMTR_MAIN --console WMTR.py
 ```
 
 ---
@@ -90,6 +116,12 @@ Windows-Mining-Trojan-Remover/
 - **Remote control**: ScreenConnect, ConnectWise, rasedy, Windows VC
 - **Mining pools / C2**: kryptex, gleeze, 176.96.137.253, etc.
 - **English-word deception**: fake task names like "Efficiently Achieve Analysis", "Windows System Health"
+
+### Whitelist (to avoid false positives)
+- AweSun / AweSun Guard (Sunlogin)
+- Thunder (迅雷), PalmInput (手心输入法), Wujie (无界浏览器)
+- CrystalDiskInfo / CrystalDiskMark
+- Common system processes (svchost, lsass, winlogon, etc.)
 
 ---
 
