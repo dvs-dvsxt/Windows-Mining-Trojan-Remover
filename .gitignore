@@ -2,12 +2,14 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
-dist/
-build/
-.eggs/
 .venv/
 venv/
 env/
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
 
 # Logs (scan logs from the tool)
 SysMonitorLogs/
